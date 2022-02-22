@@ -22,16 +22,14 @@ const authRouter = require('./auth/auth-router');
 
 const server = express();
 
-server.use(helmet());
-server.use(express.json());
-server.use(cors());
 server.use(session({
   name: 'chocolatechip',
   secret: process.env.SECRET || 'keep it a secret',
   cookie: {
-    maxAge: 1000 * 60 * 60,
+    maxAge: 1000 * 60 * 10,
     secure: false,
-    httpOnly: false,
+    httpOnly: true,
+    //sameSite: 'none' good for https
   },
   rolling: true,
   resave: false,
@@ -41,9 +39,13 @@ server.use(session({
     tablename: 'sessions',
     sidfieldname: 'sid',
     createtable: true,
-    clearInterval: 1000 * 60 * 60,
+    clearInterval: 1000 * 60 * 10,
   })
 }))
+
+server.use(helmet());
+server.use(express.json());
+server.use(cors());
 
 server.use('/api/users', usersRouter);
 server.use('/api/auth', authRouter);
