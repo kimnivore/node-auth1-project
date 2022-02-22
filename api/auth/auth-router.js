@@ -95,16 +95,19 @@ router.post('/login', checkUsernameExists, (req, res, next) => {
   }
  */
 
-router.get('/logout', (req, res) => {
+router.get('/logout', (req, res, next) => {
   if(req.session.user) {
-    req.session.destroy((err) => {
+    req.session.destroy(err => {
       if(err) {
-        res.set('Set-Cookie', 'monkey=;')
-        res.status(200).json({ message: 'no session' })
+        // res.set('Set-Cookie', 'monkey=bar')
+        // res.status(200).json({ message: 'no session' })
+        next(err)
       } else {
         res.status(200).json({ message: 'logged out'})
       }
     })
+  } else {
+    res.status(200).json({ message: 'no session' })
   }
 })
 
