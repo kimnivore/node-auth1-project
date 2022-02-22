@@ -17,7 +17,7 @@ const cors = require("cors");
   or you can use a session store like `connect-session-knex`.
  */
 
-const usersRouter = require('./users/users-model');
+const usersRouter = require('./users/users-router');
 const authRouter = require('./auth/auth-router');
 
 const server = express();
@@ -45,8 +45,8 @@ server.use(session({
   })
 }))
 
-// server.use('/api/users', usersRouter);
-// server.use('/api/auth', authRouter);
+server.use('/api/users', usersRouter);
+server.use('/api/auth', authRouter);
 
 server.get("/", (req, res) => {
   res.json({ api: "up" });
