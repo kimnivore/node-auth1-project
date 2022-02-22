@@ -17,6 +17,35 @@ router.post('/register', checkUsernameFree, checkUsernameExists, checkPasswordLe
   }
 })
 
+router.post('/login', async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    const [user] = await User.findBy({ username })
+    
+    if(user && bcrypt.compareSync(password, user.password)) {
+      req.session.user = user
+      res.status(200).json({ message: `Welcome ${username}!`})
+    } else {
+      next({ status: 401, message: 'Invalid credentials'})
+    }
+  } catch(err) {
+    next(err)
+  }
+})
+
+router.get('/logout', (req, res) => {
+  if(req.session.user) {
+    req.session.destroy((err) => {
+      if(err) {
+        res.set('Set-Cookie', 'monkey=;')
+        res.status(200).json({ message: 'no session' })
+      } else {
+        res.status(200).json({ message: 'logged out'})
+      }
+    })
+  }
+})
+
 
 module.exports = router;
 
